@@ -5,14 +5,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import sii.internship.lipinski.util.exception.ControllerException;
+import sii.internship.lipinski.util.exception.LectureNotFoundException;
 import sii.internship.lipinski.util.exception.LoginTakenException;
+import sii.internship.lipinski.util.exception.NoFreeSeatsAvailableException;
 
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({
-            LoginTakenException.class
+            LoginTakenException.class,
+            LectureNotFoundException.class,
+            NoFreeSeatsAvailableException.class
     })
     public ResponseEntity<ApiErrorResponse> handleException(ControllerException ce) {
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(

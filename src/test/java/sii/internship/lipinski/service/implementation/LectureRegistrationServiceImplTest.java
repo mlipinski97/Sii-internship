@@ -10,7 +10,11 @@ import sii.internship.lipinski.dao.entity.Lecture;
 import sii.internship.lipinski.dao.entity.LectureRegistration;
 import sii.internship.lipinski.dao.entity.User;
 import sii.internship.lipinski.repository.LectureRegistrationRepository;
+import sii.internship.lipinski.repository.LectureRepository;
+import sii.internship.lipinski.repository.UserRepository;
 import sii.internship.lipinski.service.LectureRegistrationService;
+import sii.internship.lipinski.service.LectureService;
+import sii.internship.lipinski.service.UserService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -27,13 +31,19 @@ class LectureRegistrationServiceImplTest {
 
     @Mock
     LectureRegistrationRepository lectureRegistrationRepository;
+    @Mock
+    UserService userService;
+    @Mock
+    LectureRepository lectureRepository;
+    @Mock
+    UserRepository userRepository;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
     //object under tests
     LectureRegistrationService lectureRegistrationService;
 
     @BeforeEach
     void setUp() {
-        lectureRegistrationService = new LectureRegistrationServiceImpl(lectureRegistrationRepository);
+        lectureRegistrationService = new LectureRegistrationServiceImpl(lectureRegistrationRepository, userService, lectureRepository, userRepository);
     }
 
     @Test
