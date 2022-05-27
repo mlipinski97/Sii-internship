@@ -16,8 +16,6 @@ import sii.internship.lipinski.repository.LectureRepository;
 import sii.internship.lipinski.repository.UserRepository;
 import sii.internship.lipinski.service.LectureRegistrationService;
 import sii.internship.lipinski.service.UserService;
-import sii.internship.lipinski.util.enums.ErrorCode;
-import sii.internship.lipinski.util.enums.ErrorMessage;
 import sii.internship.lipinski.util.exception.*;
 
 import java.nio.file.Files;
@@ -105,12 +103,13 @@ class LectureRegistrationServiceImplTest {
         //then
         try {
             lectureRegistrationService.createNewRegistration(testUserDto, testLecture.getId());
-        } catch (ControllerException e) {
+        } catch (NoFreeSeatsAvailableException | LectureSchedulesCollideException | LectureNotFoundException | LoginTakenException e) {
             logger.info("Problem occurred while testing creating new lecture reservation"
                     + "\n see more: " + Arrays.asList(e.getStackTrace()));
         }
         verify(lectureRegistrationRepository).save(expectedLectureRegistration);
         assertTrue(Files.isReadable(path));
+
     }
 
     @Test
@@ -194,8 +193,8 @@ class LectureRegistrationServiceImplTest {
     }
 
     @Test
-    @DisplayName("when given user credentials and incorrect lecture id then it throws LectureNotFoundExpcetion")
-    void whenGivenUserCredentialsAndIncorrectLectureId_thenItThrowsLectureNotFoundExpcetion() {
+    @DisplayName("when given user credentials and incorrect lecture id then it throws LectureNotFoundException")
+    void whenGivenUserCredentialsAndIncorrectLectureId_thenItThrowsLectureNotFoundException() {
         //given
         UserDto testUserDto = new UserDto();
         testUserDto.setEmail("test@email.com");
@@ -208,5 +207,53 @@ class LectureRegistrationServiceImplTest {
         //then
         assertThrows(LectureNotFoundException.class, () -> lectureRegistrationService.createNewRegistration(testUserDto, lectureId));
         verify(lectureRegistrationRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("when given user login and lecture id then it removes lecture registration")
+    void whenGivenUserLoginAndLectureId_thenItRemovesLectureRegistration() {
+        //given
+        User testUser = new User();
+        testUser.setLogin("testLogin");
+        testUser.setEmail("test@email.com");
+        Lecture testLecture = new Lecture();
+        testLecture.setNumberOfFreeSeats(4);
+        testLecture.setId(1L);
+        LectureRegistration expectedLectureRegistration = new LectureRegistration();
+        expectedLectureRegistration.setLecture(testLecture);
+        expectedLectureRegistration.setUser(testUser);
+        //when
+        when(lectureRegistrationRepository.findByUserLoginAndLectureId(testUser.getLogin(), testLecture.getId()))
+                .thenReturn(Optional.of(expectedLectureRegistration));
+        when(lectureRepository.findById(testLecture.getId())).thenReturn(Optional.of(testLecture));
+        //then
+        try {
+            lectureRegistrationService.cancelRegistration(testUser.getLogin(), testLecture.getId());
+        } catch (LectureRegistrationNotFoundException | LectureNotFoundException e) {
+            logger.info("Problem occurred while testing canceling lecture reservation"
+                    + "\n see more: " + Arrays.asList(e.getStackTrace()));
+        }
+        verify(lectureRegistrationRepository).delete(expectedLectureRegistration);
+        assertEquals(5, testLecture.getNumberOfFreeSeats());
+    }
+
+    @Test
+    @DisplayName("when given wrong user login or wrong lecture id then it throws LectureRegistrationNotFoundException")
+    void whenGivenWrongUserLoginOrWrongLectureId_thenItThrowsLectureRegistrationNotFoundException() {
+        //given
+        User testUser = new User();
+        testUser.setLogin("testLogin");
+        testUser.setEmail("test@email.com");
+        Lecture testLecture = new Lecture();
+        testLecture.setNumberOfFreeSeats(4);
+        testLecture.setId(1L);
+        LectureRegistration expectedLectureRegistration = new LectureRegistration();
+        expectedLectureRegistration.setLecture(testLecture);
+        expectedLectureRegistration.setUser(testUser);
+        //when
+        //then
+        assertThrows(LectureRegistrationNotFoundException.class, () -> lectureRegistrationService.cancelRegistration(testUser.getLogin(), testLecture.getId()));
+        verify(lectureRegistrationRepository, never()).delete(any());
+        assertEquals(4, testLecture.getNumberOfFreeSeats());
     }
 }

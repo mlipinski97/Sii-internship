@@ -13,10 +13,7 @@ import sii.internship.lipinski.service.LectureRegistrationService;
 import sii.internship.lipinski.service.UserService;
 import sii.internship.lipinski.util.enums.ErrorCode;
 import sii.internship.lipinski.util.enums.ErrorMessage;
-import sii.internship.lipinski.util.exception.LectureNotFoundException;
-import sii.internship.lipinski.util.exception.LectureSchedulesCollideException;
-import sii.internship.lipinski.util.exception.LoginTakenException;
-import sii.internship.lipinski.util.exception.NoFreeSeatsAvailableException;
+import sii.internship.lipinski.util.exception.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -75,6 +72,20 @@ public class LectureRegistrationServiceImpl implements LectureRegistrationServic
         createEmailFile(user.getEmail(), lecture);
     }
 
+    @Override
+    public void cancelRegistration(String userLogin, Long lectureId) throws LectureRegistrationNotFoundException, LectureNotFoundException {
+        LectureRegistration lectureRegistration = lectureRegistrationRepository
+                .findByUserLoginAndLectureId(userLogin, lectureId)
+                .orElseThrow(()-> new LectureRegistrationNotFoundException(ErrorMessage.LECTURE_REGISTRATION_NOT_FOUND.getMessage(),
+                        ErrorCode.LECTURE_REGISTRATION_NOT_FOUND.getValue()));
+        Lecture lectureToUpdate = lectureRepository.findById(lectureId).orElseThrow(()->new LectureNotFoundException(
+                ErrorMessage.LECTURE_NOT_FOUND.getMessage(), ErrorCode.LECTURE_NOT_FOUND.getValue()
+        ));
+        lectureRegistrationRepository.delete(lectureRegistration);
+        lectureToUpdate.setNumberOfFreeSeats(lectureToUpdate.getNumberOfFreeSeats()+1);
+        lectureRepository.save(lectureToUpdate);
+    }
+
     private boolean isCollidingWithOtherRegisteredLecture(String userLogin, LocalDateTime lectureTime) {
         Iterable<LectureRegistration> registeredLectures = lectureRegistrationRepository.findAllByUserLogin(userLogin);
         for (LectureRegistration lr : registeredLectures) {
@@ -93,7 +104,7 @@ public class LectureRegistrationServiceImpl implements LectureRegistrationServic
                 " o tematyce: " + lecture.getSubject() +
                 "\n" + "Prelekcja odbedzie sie w terminie: " +
                 lecture.getStartingDateTime().format(formatter) +
-                " - " +lecture.getEndingDateTime().format(formatter);
+                " - " + lecture.getEndingDateTime().format(formatter);
         byte[] strToBytes = message.getBytes();
 
         try {

@@ -14,7 +14,9 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
             LoginTakenException.class,
             LectureNotFoundException.class,
             NoFreeSeatsAvailableException.class,
-            LectureSchedulesCollideException.class
+            LectureSchedulesCollideException.class,
+            UserNotFoundException.class,
+            LectureRegistrationNotFoundException.class
     })
     public ResponseEntity<ApiErrorResponse> handleException(ControllerException ce) {
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(
