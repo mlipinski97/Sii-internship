@@ -10,6 +10,7 @@ import sii.internship.lipinski.service.UserService;
 import sii.internship.lipinski.util.enums.ErrorCode;
 import sii.internship.lipinski.util.enums.ErrorMessage;
 import sii.internship.lipinski.util.exception.LoginTakenException;
+import sii.internship.lipinski.util.exception.UserNotFoundException;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,5 +47,14 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream()
                 .map(user -> modelMapper.map(user, BrowseUserDto.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserDto changeEmail(String userLogin, String newUserEmail) throws UserNotFoundException {
+        User userToBeChanged = userRepository.findByLogin(userLogin).orElseThrow(() -> new UserNotFoundException(
+                ErrorMessage.USER_NOT_FOUND.getMessage(), ErrorCode.USER_NOT_FOUND.getValue()
+        ));
+        userToBeChanged.setEmail(newUserEmail);
+        return modelMapper.map(userRepository.save(userToBeChanged), UserDto.class);
     }
 }
