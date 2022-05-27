@@ -2,6 +2,7 @@ package sii.internship.lipinski.service.implementation;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import sii.internship.lipinski.dao.dto.BrowseUserDto;
 import sii.internship.lipinski.dao.dto.UserDto;
 import sii.internship.lipinski.dao.entity.User;
 import sii.internship.lipinski.repository.UserRepository;
@@ -11,6 +12,7 @@ import sii.internship.lipinski.util.enums.ErrorMessage;
 import sii.internship.lipinski.util.exception.LoginTakenException;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -37,5 +39,12 @@ public class UserServiceImpl implements UserService {
         }
         User newUser = modelMapper.map(userDto, User.class);
         return modelMapper.map(userRepository.save(newUser), UserDto.class);
+    }
+
+    @Override
+    public Iterable<BrowseUserDto> getAll() {
+        return userRepository.findAll().stream()
+                .map(user -> modelMapper.map(user, BrowseUserDto.class))
+                .collect(Collectors.toList());
     }
 }
