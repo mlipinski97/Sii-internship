@@ -8,13 +8,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import sii.internship.lipinski.dao.dto.BrowseUserDto;
 import sii.internship.lipinski.dao.dto.UserDto;
 import sii.internship.lipinski.dao.entity.User;
 import sii.internship.lipinski.repository.UserRepository;
 import sii.internship.lipinski.service.UserService;
 import sii.internship.lipinski.util.exception.LoginTakenException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -107,6 +110,31 @@ class UserServiceImplTest {
         when(userRepository.findByLogin(testLogin)).thenReturn(Optional.of(modelMapper.map(expectedUserDto, User.class)));
         //then
         assertThrows(LoginTakenException.class, () -> userService.register(actualUserDto));
+    }
+
+    @Test
+    @DisplayName("when called it returns list of all registered users with emails")
+    void whenCalled_thenItReturnsListOfAllRegisteredUsers() {
+        //given
+        User expectedUser1 = new User();
+        User expectedUser2 = new User();
+        User expectedUser3 = new User();
+        expectedUser1.setEmail("test1@email.com");
+        expectedUser2.setEmail("test2@email.com");
+        expectedUser3.setEmail("test3@email.com");
+        expectedUser1.setLogin("login1");
+        expectedUser2.setLogin("login1");
+        expectedUser3.setLogin("login1");
+        List<User> users = new ArrayList<>(Arrays.asList(expectedUser1, expectedUser2, expectedUser3));
+        List<BrowseUserDto> expectedUserList = new ArrayList<>();
+        expectedUserList.add(modelMapper.map(expectedUser1, BrowseUserDto.class));
+        expectedUserList.add(modelMapper.map(expectedUser2, BrowseUserDto.class));
+        expectedUserList.add(modelMapper.map(expectedUser3, BrowseUserDto.class));
+        //when
+        when(userRepository.findAll()).thenReturn(users);
+        //then
+        Iterable<BrowseUserDto> actualUserList = userService.getAll();
+        assertEquals(expectedUserList, actualUserList);
     }
 
 }
