@@ -7,6 +7,8 @@ import sii.internship.lipinski.service.LectureRegistrationService;
 import sii.internship.lipinski.service.LectureService;
 import sii.internship.lipinski.util.exception.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/lecture")
 public class LectureController {
@@ -38,4 +40,20 @@ public class LectureController {
     public void cancelLectureRegistration(@PathVariable String userLogin, @PathVariable Long lectureId) throws LectureRegistrationNotFoundException, LectureNotFoundException {
         lectureRegistrationService.cancelRegistration(userLogin, lectureId);
     }
+
+    @GetMapping("/getParticipationPercentagePerLectureByAllParticipants")
+    public Map<LectureDto, Double> getConventionSummary(){
+       return lectureRegistrationService.getParticipationPercentagePerLectureByAllParticipants();
+    }
+
+    @GetMapping("/getParticipationPercentagePerLecture")
+    Map<LectureDto, Double> getParticipationPercentagePerLecture(){
+        return lectureService.getParticipationPercentagePerLecture();
+    }
+
+    @GetMapping("/getParticipationPercentagePerSubject")
+    Map<String, Double> getParticipationPercentagePerSubject(){
+        return lectureService.getParticipationPercentagePerSubject();
+    }
+
 }

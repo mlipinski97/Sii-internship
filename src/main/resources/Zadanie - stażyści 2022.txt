@@ -20,9 +20,9 @@ Podczas dokonywania rezerwacji powinien podać swój login oraz adres e-mail.
 +5. Poprawne dokonanie rezerwacji skutkuje wysłaniem powiadomienia użytkownikowi na podany przez niego adres
 (wysyłka wiadomości - patrz wskazówki).
 +6. Użytkownik może anulować rezerwację.
--7. Użytkownik może zaktualizować swój adres e-mail.
++7. Użytkownik może zaktualizować swój adres e-mail.
 +8. System umożliwia wyświetlenie listy zarejestrowanych użytkowników wraz z ich adresami e-mail.
-9. Wygenerowanie zestawienia dla organizatora:
++9. Wygenerowanie zestawienia dla organizatora:
 	- zestawienie wykładów wg zainteresowania (procentowy udział uczestników w danym wykładzie)
 	- zestawienie ścieżek tematycznych wg zainteresowania (procentowy udział)
 

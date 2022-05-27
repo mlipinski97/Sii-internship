@@ -2,6 +2,7 @@ package sii.internship.lipinski.service.implementation;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import sii.internship.lipinski.dao.dto.LectureDto;
 import sii.internship.lipinski.dao.dto.UserDto;
 import sii.internship.lipinski.dao.entity.Lecture;
 import sii.internship.lipinski.dao.entity.LectureRegistration;
@@ -21,6 +22,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class LectureRegistrationServiceImpl implements LectureRegistrationService {
@@ -85,6 +89,17 @@ public class LectureRegistrationServiceImpl implements LectureRegistrationServic
         lectureToUpdate.setNumberOfFreeSeats(lectureToUpdate.getNumberOfFreeSeats() + 1);
         lectureRepository.save(lectureToUpdate);
     }
+
+    @Override
+    public Map<LectureDto, Double> getParticipationPercentagePerLectureByAllParticipants() {
+        List<LectureRegistration> lectureRegistrations = lectureRegistrationRepository.findAll();
+        Map<Lecture, Long> frequencyMap = lectureRegistrations.stream()
+                .collect(Collectors.groupingBy(LectureRegistration::getLecture, Collectors.counting()));
+        return frequencyMap.entrySet()
+                .stream()
+                .collect(Collectors.toMap(e -> modelMapper.map(e.getKey(), LectureDto.class), e -> (e.getValue().doubleValue() / lectureRegistrations.size()) * 100));
+    }
+
 
     private boolean isCollidingWithOtherRegisteredLecture(String userLogin, LocalDateTime lectureTime) {
         Iterable<LectureRegistration> registeredLectures = lectureRegistrationRepository.findAllByUserLogin(userLogin);
