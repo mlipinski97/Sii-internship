@@ -76,13 +76,13 @@ public class LectureRegistrationServiceImpl implements LectureRegistrationServic
     public void cancelRegistration(String userLogin, Long lectureId) throws LectureRegistrationNotFoundException, LectureNotFoundException {
         LectureRegistration lectureRegistration = lectureRegistrationRepository
                 .findByUserLoginAndLectureId(userLogin, lectureId)
-                .orElseThrow(()-> new LectureRegistrationNotFoundException(ErrorMessage.LECTURE_REGISTRATION_NOT_FOUND.getMessage(),
+                .orElseThrow(() -> new LectureRegistrationNotFoundException(ErrorMessage.LECTURE_REGISTRATION_NOT_FOUND.getMessage(),
                         ErrorCode.LECTURE_REGISTRATION_NOT_FOUND.getValue()));
-        Lecture lectureToUpdate = lectureRepository.findById(lectureId).orElseThrow(()->new LectureNotFoundException(
+        Lecture lectureToUpdate = lectureRepository.findById(lectureId).orElseThrow(() -> new LectureNotFoundException(
                 ErrorMessage.LECTURE_NOT_FOUND.getMessage(), ErrorCode.LECTURE_NOT_FOUND.getValue()
         ));
         lectureRegistrationRepository.delete(lectureRegistration);
-        lectureToUpdate.setNumberOfFreeSeats(lectureToUpdate.getNumberOfFreeSeats()+1);
+        lectureToUpdate.setNumberOfFreeSeats(lectureToUpdate.getNumberOfFreeSeats() + 1);
         lectureRepository.save(lectureToUpdate);
     }
 

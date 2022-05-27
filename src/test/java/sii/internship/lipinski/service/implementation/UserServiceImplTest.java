@@ -14,6 +14,7 @@ import sii.internship.lipinski.dao.entity.User;
 import sii.internship.lipinski.repository.UserRepository;
 import sii.internship.lipinski.service.UserService;
 import sii.internship.lipinski.util.exception.LoginTakenException;
+import sii.internship.lipinski.util.exception.UserNotFoundException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,8 +25,7 @@ import java.util.logging.Logger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -137,4 +137,44 @@ class UserServiceImplTest {
         assertEquals(expectedUserList, actualUserList);
     }
 
+    @Test
+    @DisplayName("when given user login and new email then it changes email")
+    void whenGivenUserLoginAndNewEmail_thenItChangesEmail() {
+        //given
+        String newEmail = "new@email.com";
+        UserDto testUserDto = new UserDto();
+        testUserDto.setEmail("old@email.com");
+        testUserDto.setLogin("login");
+        UserDto expectedUserDto = new UserDto();
+        expectedUserDto.setEmail(newEmail);
+        expectedUserDto.setLogin("login");
+        User expectedUser = modelMapper.map(expectedUserDto, User.class);
+        UserDto actualUserDto = null;
+        //when
+        when(userRepository.findByLogin(testUserDto.getLogin())).thenReturn(Optional.of(modelMapper.map(testUserDto, User.class)));
+        when(userRepository.save(any())).thenReturn(expectedUser);
+        //then
+        try {
+            actualUserDto = userService.changeEmail(testUserDto.getLogin(), newEmail);
+        } catch (UserNotFoundException e) {
+            logger.info("Problem occurred while testing changing user email"
+                    + "\n see more: " + Arrays.asList(e.getStackTrace()));
+        }
+        verify(userRepository).save(expectedUser);
+        assertEquals(expectedUserDto, actualUserDto);
+    }
+
+    @Test
+    @DisplayName("when given user wrong login and new email then it throws UserNotFoundException")
+    void whenGivenWrongUserLoginAndNewEmail_thenItThrowsUserNotFoundException() {
+        //given
+        String newEmail = "new@email.com";
+        UserDto testUserDto = new UserDto();
+        testUserDto.setEmail("old@email.com");
+        testUserDto.setLogin("login");
+        //when
+        //then
+        assertThrows(UserNotFoundException.class, () -> userService.changeEmail(testUserDto.getLogin(), newEmail));
+        verify(userRepository, never()).save(any());
+    }
 }

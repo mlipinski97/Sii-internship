@@ -5,6 +5,7 @@ import sii.internship.lipinski.dao.dto.BrowseUserDto;
 import sii.internship.lipinski.dao.dto.UserDto;
 import sii.internship.lipinski.service.UserService;
 import sii.internship.lipinski.util.exception.LoginTakenException;
+import sii.internship.lipinski.util.exception.UserNotFoundException;
 
 @RestController
 @RequestMapping("/api/user")
@@ -24,5 +25,10 @@ public class UserController {
     @GetMapping
     public Iterable<BrowseUserDto> getAllRegisteredUsers(){
         return userService.getAll();
+    }
+
+    @PatchMapping("/{userLogin}/{newUserEmail}")
+    public UserDto changeMail(@PathVariable String userLogin, @PathVariable String newUserEmail) throws UserNotFoundException {
+        return userService.changeEmail(userLogin, newUserEmail);
     }
 }
