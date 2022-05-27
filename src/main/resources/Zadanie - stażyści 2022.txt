@@ -13,11 +13,11 @@ natomiast o innej godzinie najbardziej może wybrać inną ścieżkę.
 Portal powinien obsługiwać następujące scenariusze:
 +1. Użytkownik może obejrzeć plan konferencji.
 +2. Użytkownik po podaniu swojego loginu może obejrzeć prelekcje na które się zapisał.
-3. Jeżeli prelekcja ma jeszcze wolne miejsca, użytkownik ma możliwość dokonania rezerwacji.
++3. Jeżeli prelekcja ma jeszcze wolne miejsca, użytkownik ma możliwość dokonania rezerwacji.
 Podczas dokonywania rezerwacji powinien podać swój login oraz adres e-mail.
-4. Jeżeli w systemie istnieje już użytkownik z danym loginem, ale z innym adresem e-mail,
++4. Jeżeli w systemie istnieje już użytkownik z danym loginem, ale z innym adresem e-mail,
  system powinien zaprezentować komunikat „Podany login jest już zajęty”.
-5. Poprawne dokonanie rezerwacji skutkuje wysłaniem powiadomienia użytkownikowi na podany przez niego adres
++5. Poprawne dokonanie rezerwacji skutkuje wysłaniem powiadomienia użytkownikowi na podany przez niego adres
 (wysyłka wiadomości - patrz wskazówki).
 6. Użytkownik może anulować rezerwację. 
 7. Użytkownik może zaktualizować swój adres e-mail. 
@@ -28,11 +28,11 @@ Podczas dokonywania rezerwacji powinien podać swój login oraz adres e-mail.
 
 
 Wskazówki i założenia techniczne: 
-1.	Dostęp do usług realizowany za pomocą REST api. 
-2.	Pamiętaj, że poprawne działanie aplikacji ma wyższy priorytet niż ukończenie wszystkich funkcjonalności systemu.
++1.	Dostęp do usług realizowany za pomocą REST api.
++2.	Pamiętaj, że poprawne działanie aplikacji ma wyższy priorytet niż ukończenie wszystkich funkcjonalności systemu.
 Lepiej jest napisać mniej a dobrze, niż więcej i z błędami.
-3.	Zapis danych powinien odbywać się do bazy danych. Możesz użyć dowolnej bazy danych in-memory (np. H2). 
-4.	Utrzymaj schemat bazy możliwie prosty. W bazie przechowuj informacje o użytkownikach oraz zapisach na prelekcje.
++3.	Zapis danych powinien odbywać się do bazy danych. Możesz użyć dowolnej bazy danych in-memory (np. H2).
++4.	Utrzymaj schemat bazy możliwie prosty. W bazie przechowuj informacje o użytkownikach oraz zapisach na prelekcje.
 Sam plan konferencji nie musi być przechowywany w bazie danych, może być zapisany na stałe w kodzie.
 Pamiętaj tylko, aby każda prelekcja miała swój identyfikator, który będziesz przechowywał wraz z rezerwacją prelekcji.
 5.	Nie implementuj rzeczywistego wysyłania powiadomień e-mail.
