@@ -1,8 +1,11 @@
 package sii.internship.lipinski.service;
 
+import sii.internship.lipinski.dao.dto.LectureDto;
 import sii.internship.lipinski.dao.dto.UserDto;
 import sii.internship.lipinski.dao.entity.LectureRegistration;
 import sii.internship.lipinski.util.exception.*;
+
+import java.util.Map;
 
 public interface LectureRegistrationService {
     Iterable<LectureRegistration> getAllLectureRegistrationsByUserLogin(String login);
@@ -10,4 +13,6 @@ public interface LectureRegistrationService {
     void createNewRegistration(UserDto userDto, Long lectureId) throws LoginTakenException, LectureNotFoundException, NoFreeSeatsAvailableException, LectureSchedulesCollideException;
 
     void cancelRegistration(String userLogin, Long lectureId) throws LectureRegistrationNotFoundException, LectureNotFoundException;
+
+    Map<LectureDto, Double> getParticipationPercentagePerLectureByAllParticipants();
 }

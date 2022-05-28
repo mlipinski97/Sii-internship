@@ -28,4 +28,7 @@ public class Lecture {
 
     @Column(name = "number_of_free_seats")
     private Integer numberOfFreeSeats;
+
+    @Column(name = "max_number_of_seats")
+    private Integer maxNumberOfSeats;
 }
