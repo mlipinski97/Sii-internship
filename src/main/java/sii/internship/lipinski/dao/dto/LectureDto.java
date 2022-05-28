@@ -14,4 +14,5 @@ public class LectureDto {
     private LocalDateTime endingDateTime;
     private String subject;
     private Integer numberOfFreeSeats;
+    private Integer maxNumberOfSeats;
 }

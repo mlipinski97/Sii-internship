@@ -10,6 +10,7 @@ import sii.internship.lipinski.service.LectureService;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -44,12 +45,11 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     public Map<LectureDto, Double> getParticipationPercentagePerLecture() {
-        int maxSeatsValue = 5;
         Map<LectureDto, Double> sortedPercentageMap = new LinkedHashMap<>();
         lectureRepository.findAll()
                 .stream()
                 .collect(Collectors.toMap(lecture -> modelMapper.map(lecture, LectureDto.class),
-                        lecture -> 100 * ((maxSeatsValue - (double) lecture.getNumberOfFreeSeats()) / maxSeatsValue)))
+                        lecture -> 100 * ((lecture.getMaxNumberOfSeats() - (double) lecture.getNumberOfFreeSeats()) / lecture.getMaxNumberOfSeats())))
                 .entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
@@ -59,15 +59,17 @@ public class LectureServiceImpl implements LectureService {
 
     @Override
     public Map<String, Double> getParticipationPercentagePerSubject() {
-        int maxSeatsValue = 5;
         Map<String, Double> sortedPercentageMap = new LinkedHashMap<>();
-        lectureRepository.findAll()
-                .stream()
-                .collect(Collectors.toMap(Lecture::getSubject, lecture -> (double) (maxSeatsValue - lecture.getNumberOfFreeSeats()), Double::sum))
+        List<Lecture> allLectures = lectureRepository.findAll();
+        Map<String, Long> subjectMaxSeatsMap = allLectures.stream()
+                .collect(Collectors.groupingBy(Lecture::getSubject, Collectors.summingLong(Lecture::getMaxNumberOfSeats)));
+        allLectures.stream()
+                .collect(Collectors.toMap(Lecture::getSubject, lecture -> (double) (lecture.getMaxNumberOfSeats() - lecture.getNumberOfFreeSeats()), Double::sum))
                 .entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .forEachOrdered(entry -> sortedPercentageMap.put(entry.getKey(), 100*entry.getValue()/(3*maxSeatsValue)));
+                .forEachOrdered(entry -> sortedPercentageMap.put(entry.getKey(),
+                        100 * entry.getValue() / subjectMaxSeatsMap.get(entry.getKey())));
         return sortedPercentageMap;
     }
 
