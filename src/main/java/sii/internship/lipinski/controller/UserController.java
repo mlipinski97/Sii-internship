@@ -20,9 +20,9 @@ public class UserController {
         return userService.register(registerDto);
     }
 
-    @GetMapping
-    public Iterable<BrowseUserDto> getAllRegisteredUsers(){
-        return userService.getAll();
+    @GetMapping(value = {"", "/{pageNumber}/{pageSize}"})
+    public Iterable<BrowseUserDto> getAllRegisteredUsers(@PathVariable(required = false) Integer pageNumber, @PathVariable(required = false) Integer pageSize){
+        return userService.getAll(pageNumber,pageSize);
     }
 
     @PatchMapping("/{userLogin}/{newUserEmail}")
