@@ -1,5 +1,6 @@
 package sii.internship.lipinski.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import sii.internship.lipinski.dao.dto.BrowseUserDto;
 import sii.internship.lipinski.dao.dto.UserDto;
@@ -8,14 +9,11 @@ import sii.internship.lipinski.util.exception.LoginTakenException;
 import sii.internship.lipinski.util.exception.UserNotFoundException;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/user")
+@RequiredArgsConstructor
 public class UserController {
 
-    UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final UserService userService;
 
     @PostMapping
     public UserDto register(@RequestBody UserDto registerDto) throws LoginTakenException {

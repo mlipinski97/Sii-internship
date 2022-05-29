@@ -1,5 +1,6 @@
 package sii.internship.lipinski.service.implementation;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import sii.internship.lipinski.dao.dto.BrowseUserDto;
@@ -16,15 +17,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    ModelMapper modelMapper;
-    UserRepository userRepository;
-
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-        this.modelMapper = new ModelMapper();
-    }
+    private final ModelMapper modelMapper = new ModelMapper();
+    private final UserRepository userRepository;
 
     @Override
     public UserDto register(UserDto userDto) throws LoginTakenException {
@@ -35,13 +32,13 @@ public class UserServiceImpl implements UserService {
                         ErrorMessage.LOGIN_ALREADY_TAKEN.getMessage(),
                         ErrorCode.LOGIN_ALREADY_TAKEN.getValue());
             } else {
-                return modelMapper.map(userRepository.save(user.get()), UserDto.class);
+                return modelMapper.map(user.get(), UserDto.class);
             }
         }
         User newUser = modelMapper.map(userDto, User.class);
         return modelMapper.map(userRepository.save(newUser), UserDto.class);
     }
-
+//dodac paginacje
     @Override
     public Iterable<BrowseUserDto> getAll() {
         return userRepository.findAll().stream()

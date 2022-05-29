@@ -1,5 +1,6 @@
 package sii.internship.lipinski.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import sii.internship.lipinski.dao.dto.LectureDto;
 import sii.internship.lipinski.dao.dto.UserDto;
@@ -10,16 +11,12 @@ import sii.internship.lipinski.util.exception.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/lecture")
+@RequestMapping("/lecture")
+@RequiredArgsConstructor
 public class LectureController {
     private final LectureService lectureService;
     private final LectureRegistrationService lectureRegistrationService;
 
-
-    public LectureController(LectureService lectureService, LectureRegistrationService lectureRegistrationService) {
-        this.lectureService = lectureService;
-        this.lectureRegistrationService = lectureRegistrationService;
-    }
 
     @GetMapping
     public Iterable<LectureDto> getConventionPlan() {
@@ -41,18 +38,13 @@ public class LectureController {
         lectureRegistrationService.cancelRegistration(userLogin, lectureId);
     }
 
-    @GetMapping("/getParticipationPercentagePerLectureByAllParticipants")
-    public Map<LectureDto, Double> getConventionSummary(){
-       return lectureRegistrationService.getParticipationPercentagePerLectureByAllParticipants();
-    }
-
     @GetMapping("/getParticipationPercentagePerLecture")
-    Map<LectureDto, Double> getParticipationPercentagePerLecture(){
+    Map<LectureDto, Double> getParticipationPercentagePerLecture() {
         return lectureService.getParticipationPercentagePerLecture();
     }
 
     @GetMapping("/getParticipationPercentagePerSubject")
-    Map<String, Double> getParticipationPercentagePerSubject(){
+    Map<String, Double> getParticipationPercentagePerSubject() {
         return lectureService.getParticipationPercentagePerSubject();
     }
 

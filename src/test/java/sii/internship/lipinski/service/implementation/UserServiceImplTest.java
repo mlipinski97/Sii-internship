@@ -56,7 +56,6 @@ class UserServiceImplTest {
         expectedUserDto.setLogin(testLogin);
         //when
         when(userRepository.findByLogin(testLogin)).thenReturn(Optional.of(modelMapper.map(expectedUserDto, User.class)));
-        when(userRepository.save(any())).thenReturn(modelMapper.map(expectedUserDto, User.class));
         //then
         try {
             userService.register(expectedUserDto);
@@ -65,9 +64,7 @@ class UserServiceImplTest {
                     + expectedUserDto.getLogin() + " " + expectedUserDto.getEmail()
                     + "\nfor more info see: " + Arrays.toString(e.getStackTrace()));
         }
-        ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
-        verify(userRepository).save(userArgumentCaptor.capture());
-        assertEquals(expectedUserDto, modelMapper.map(userArgumentCaptor.getValue(), UserDto.class));
+        verify(userRepository, never()).save(any());
     }
 
     @Test
