@@ -1,7 +1,7 @@
 # Sii-internship - Maciej Lipiński
 
 ## All endpoints with example requests are avaiable after running the app at: http://localhost:8080/api/swagger-ui.html#
-## Additonaly postman collection is avaiable in /src/main/resources. Included collection has example request for each endpoint.
+## Additonaly postman collection is avaiable at: [POSTMAN COLLECTION](https://github.com/mlipinski97/Sii-internship/blob/master/src/main/resources/sii-internship.postman_collection.json). Included collection has example request for each endpoint.
 
 
 ```diff
