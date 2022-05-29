@@ -67,6 +67,7 @@ Example request:
  ---
     
 Polska wersja:
+
 W przypadku uruchomienia lokalnego należy każdy adres poprzedzić prefixem: http://localhost:8080
 
 - UserController obejmuje akcje związane z użytkownikami
