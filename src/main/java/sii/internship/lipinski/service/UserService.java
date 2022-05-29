@@ -7,6 +7,6 @@ import sii.internship.lipinski.util.exception.UserNotFoundException;
 
 public interface UserService {
     UserDto register(UserDto userDto) throws LoginTakenException;
-    Iterable<BrowseUserDto> getAll();
+    Iterable<BrowseUserDto> getAll(Integer pageNumber, Integer pageSize);
     UserDto changeEmail(String userLogin, String newUserEmail) throws UserNotFoundException;
 }

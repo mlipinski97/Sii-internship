@@ -8,6 +8,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import sii.internship.lipinski.dao.dto.BrowseUserDto;
 import sii.internship.lipinski.dao.dto.UserDto;
 import sii.internship.lipinski.dao.entity.User;
@@ -110,8 +113,8 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DisplayName("when called it returns list of all registered users with emails")
-    void whenCalled_thenItReturnsListOfAllRegisteredUsers() {
+    @DisplayName("when called without params it returns list of all registered users with emails as one page")
+    void whenCalledWithoutParams_thenItReturnsListOfAllRegisteredUsersAsOnePage() {
         //given
         User expectedUser1 = new User();
         User expectedUser2 = new User();
@@ -127,10 +130,66 @@ class UserServiceImplTest {
         expectedUserList.add(modelMapper.map(expectedUser1, BrowseUserDto.class));
         expectedUserList.add(modelMapper.map(expectedUser2, BrowseUserDto.class));
         expectedUserList.add(modelMapper.map(expectedUser3, BrowseUserDto.class));
+        Page<User> expectedUsersPage = new PageImpl<>(users);
+        Pageable userPaging = Pageable.unpaged();
         //when
-        when(userRepository.findAll()).thenReturn(users);
+        when(userRepository.findAll(userPaging)).thenReturn(expectedUsersPage);
         //then
-        Iterable<BrowseUserDto> actualUserList = userService.getAll();
+        Iterable<BrowseUserDto> actualUserList = userService.getAll(0, 0);
+        assertEquals(expectedUserList, actualUserList);
+    }
+
+    @Test
+    @DisplayName("when called it returns list of all registered users with emails as one page")
+    void whenCalledWithIncorrectParams_thenItReturnsListOfAllRegisteredUsersAsOnePage() {
+        //given
+        User expectedUser1 = new User();
+        User expectedUser2 = new User();
+        User expectedUser3 = new User();
+        expectedUser1.setEmail("test1@email.com");
+        expectedUser2.setEmail("test2@email.com");
+        expectedUser3.setEmail("test3@email.com");
+        expectedUser1.setLogin("login1");
+        expectedUser2.setLogin("login1");
+        expectedUser3.setLogin("login1");
+        List<User> users = new ArrayList<>(Arrays.asList(expectedUser1, expectedUser2, expectedUser3));
+        List<BrowseUserDto> expectedUserList = new ArrayList<>();
+        expectedUserList.add(modelMapper.map(expectedUser1, BrowseUserDto.class));
+        expectedUserList.add(modelMapper.map(expectedUser2, BrowseUserDto.class));
+        expectedUserList.add(modelMapper.map(expectedUser3, BrowseUserDto.class));
+        Page<User> expectedUsersPage = new PageImpl<>(users);
+        Pageable userPaging = Pageable.unpaged();
+        //when
+        when(userRepository.findAll(userPaging)).thenReturn(expectedUsersPage);
+        //then
+        Iterable<BrowseUserDto> actualUserList = userService.getAll(-7, -2);
+        assertEquals(expectedUserList, actualUserList);
+    }
+
+    @Test
+    @DisplayName("when called it returns list of all registered users with emails as parametrized page")
+    void whenCalledWithParams_thenItReturnsListOfAllRegisteredUsersAsParametrizedPage() {
+        //given
+        User expectedUser1 = new User();
+        User expectedUser2 = new User();
+        User expectedUser3 = new User();
+        expectedUser1.setEmail("test1@email.com");
+        expectedUser2.setEmail("test2@email.com");
+        expectedUser3.setEmail("test3@email.com");
+        expectedUser1.setLogin("login1");
+        expectedUser2.setLogin("login1");
+        expectedUser3.setLogin("login1");
+        List<User> users = new ArrayList<>(Arrays.asList(expectedUser1, expectedUser2, expectedUser3));
+        List<BrowseUserDto> expectedUserList = new ArrayList<>();
+        expectedUserList.add(modelMapper.map(expectedUser1, BrowseUserDto.class));
+        expectedUserList.add(modelMapper.map(expectedUser2, BrowseUserDto.class));
+        expectedUserList.add(modelMapper.map(expectedUser3, BrowseUserDto.class));
+        Page<User> expectedUsersPage = new PageImpl<>(users);
+        Pageable userPaging = Pageable.unpaged();
+        //when
+        when(userRepository.findAll(userPaging)).thenReturn(expectedUsersPage);
+        //then
+        Iterable<BrowseUserDto> actualUserList = userService.getAll(-7, -2);
         assertEquals(expectedUserList, actualUserList);
     }
 

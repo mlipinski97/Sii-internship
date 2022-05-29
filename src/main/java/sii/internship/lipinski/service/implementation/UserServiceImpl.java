@@ -2,6 +2,8 @@ package sii.internship.lipinski.service.implementation;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import sii.internship.lipinski.dao.dto.BrowseUserDto;
 import sii.internship.lipinski.dao.dto.UserDto;
@@ -40,8 +42,12 @@ public class UserServiceImpl implements UserService {
     }
 //dodac paginacje
     @Override
-    public Iterable<BrowseUserDto> getAll() {
-        return userRepository.findAll().stream()
+    public Iterable<BrowseUserDto> getAll(Integer pageNumber, Integer pageSize) {
+        Pageable userPaging = Pageable.unpaged();
+        if (pageSize != null && pageSize > 0 && pageNumber >= 0) {
+            userPaging = PageRequest.of(pageNumber, pageSize);
+        }
+        return userRepository.findAll(userPaging).stream()
                 .map(user -> modelMapper.map(user, BrowseUserDto.class))
                 .collect(Collectors.toList());
     }

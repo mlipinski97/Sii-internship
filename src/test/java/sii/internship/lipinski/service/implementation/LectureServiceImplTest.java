@@ -7,6 +7,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import sii.internship.lipinski.dao.dto.LectureDto;
 import sii.internship.lipinski.dao.entity.Lecture;
 import sii.internship.lipinski.dao.entity.LectureRegistration;
@@ -18,6 +22,7 @@ import sii.internship.lipinski.service.LectureService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -27,6 +32,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class LectureServiceImplTest {
+
+    private static final Logger logger = Logger.getLogger(UserServiceImplTest.class.getName());
 
     @Mock
     LectureRepository lectureRepository;
@@ -43,8 +50,8 @@ class LectureServiceImplTest {
     }
 
     @Test
-    @DisplayName("when called it returns all lectures")
-    void whenCalled_thenItReturnsAllLectures() {
+    @DisplayName("when called without parameters it returns all lectures in one page")
+    void whenCalledWithoutParams_thenItReturnsAllLecturesAsOnePage() {
         //given
         Lecture testLecture = new Lecture();
         testLecture.setSubject("subject");
@@ -57,13 +64,69 @@ class LectureServiceImplTest {
         testLecture.setStartingDateTime(LocalDateTime.parse("14:00 01-06-2022", formatter));
         testLecture.setNumberOfFreeSeats(5);
         List<Lecture> expectedLectures = new ArrayList<>(Arrays.asList(testLecture, testLecture2));
+        Page<Lecture> expectedPage = new PageImpl<>(expectedLectures);
+        Pageable userPaging = Pageable.unpaged();
         //when
-        when(lectureRepository.findAll()).thenReturn(expectedLectures);
+        when(lectureRepository.findAll(userPaging)).thenReturn(expectedPage);
         //then
-        List<Lecture> actualLectures = StreamSupport.stream(lectureService.getAll().spliterator(), false)
+        List<Lecture> actualLectures = StreamSupport.stream(lectureService.getAll(0, 0).spliterator(), false)
                 .map(lectureDto -> modelMapper.map(lectureDto, Lecture.class))
                 .collect(Collectors.toList());
-        verify(lectureRepository).findAll();
+        verify(lectureRepository).findAll(userPaging);
+        assertEquals(expectedLectures, actualLectures);
+    }
+
+    @Test
+    @DisplayName("when called with parameters it returns all lectures as parametrized page")
+    void whenCalledWithParams_thenItReturnsAllLecturesAsparametrizedPage() {
+        //given
+        Lecture testLecture = new Lecture();
+        testLecture.setSubject("subject");
+        testLecture.setEndingDateTime(LocalDateTime.parse("11:45 01-06-2022", formatter));
+        testLecture.setStartingDateTime(LocalDateTime.parse("10:00 01-06-2022", formatter));
+        testLecture.setNumberOfFreeSeats(5);
+        Lecture testLecture2 = new Lecture();
+        testLecture.setSubject("another subject");
+        testLecture.setEndingDateTime(LocalDateTime.parse("11:45 01-06-2022", formatter));
+        testLecture.setStartingDateTime(LocalDateTime.parse("14:00 01-06-2022", formatter));
+        testLecture.setNumberOfFreeSeats(5);
+        List<Lecture> expectedLectures = new ArrayList<>(Arrays.asList(testLecture, testLecture2));
+        Page<Lecture> expectedPage = new PageImpl<>(expectedLectures);
+        Pageable userPaging = PageRequest.of(0, 2);
+        //when
+        when(lectureRepository.findAll(userPaging)).thenReturn(expectedPage);
+        //then
+        List<Lecture> actualLectures = StreamSupport.stream(lectureService.getAll(0, 2).spliterator(), false)
+                .map(lectureDto -> modelMapper.map(lectureDto, Lecture.class))
+                .collect(Collectors.toList());
+        verify(lectureRepository).findAll(userPaging);
+        assertEquals(expectedLectures, actualLectures);
+    }
+
+    @Test
+    @DisplayName("when called with incorrect parameters it returns all lectures as one page")
+    void whenCalledWithIncorrectParams_thenItReturnsAllLecturesAsOnePage() {
+        //given
+        Lecture testLecture = new Lecture();
+        testLecture.setSubject("subject");
+        testLecture.setEndingDateTime(LocalDateTime.parse("11:45 01-06-2022", formatter));
+        testLecture.setStartingDateTime(LocalDateTime.parse("10:00 01-06-2022", formatter));
+        testLecture.setNumberOfFreeSeats(5);
+        Lecture testLecture2 = new Lecture();
+        testLecture.setSubject("another subject");
+        testLecture.setEndingDateTime(LocalDateTime.parse("11:45 01-06-2022", formatter));
+        testLecture.setStartingDateTime(LocalDateTime.parse("14:00 01-06-2022", formatter));
+        testLecture.setNumberOfFreeSeats(5);
+        List<Lecture> expectedLectures = new ArrayList<>(Arrays.asList(testLecture, testLecture2));
+        Page<Lecture> expectedPage = new PageImpl<>(expectedLectures);
+        Pageable userPaging = Pageable.unpaged();
+        //when
+        when(lectureRepository.findAll(userPaging)).thenReturn(expectedPage);
+        //then
+        List<Lecture> actualLectures = StreamSupport.stream(lectureService.getAll(-9, -2).spliterator(), false)
+                .map(lectureDto -> modelMapper.map(lectureDto, Lecture.class))
+                .collect(Collectors.toList());
+        verify(lectureRepository).findAll(userPaging);
         assertEquals(expectedLectures, actualLectures);
     }
 

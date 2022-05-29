@@ -18,9 +18,9 @@ public class LectureController {
     private final LectureRegistrationService lectureRegistrationService;
 
 
-    @GetMapping
-    public Iterable<LectureDto> getConventionPlan() {
-        return lectureService.getAll();
+    @GetMapping(value = {"", "/{pageNumber}/{pageSize}"})
+    public Iterable<LectureDto> getConventionPlan(@PathVariable(required = false) Integer pageNumber, @PathVariable(required = false) Integer pageSize) {
+        return lectureService.getAll(pageNumber, pageSize);
     }
 
     @GetMapping("/getRegisteredLectures/{login}")

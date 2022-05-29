@@ -2,6 +2,8 @@ package sii.internship.lipinski.service.implementation;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import sii.internship.lipinski.dao.dto.LectureDto;
 import sii.internship.lipinski.dao.entity.Lecture;
@@ -24,10 +26,14 @@ public class LectureServiceImpl implements LectureService {
     private final ModelMapper modelMapper = new ModelMapper();
     private final LectureRegistrationService lectureRegistrationService;
 
-    //TODO: dodac paginacje
     @Override
-    public Iterable<LectureDto> getAll() {
-        return lectureRepository.findAll().stream()
+    public Iterable<LectureDto> getAll(Integer pageNumber, Integer pageSize) {
+        Pageable lecturePaging = Pageable.unpaged();
+        if (pageSize != null && pageSize > 0 && pageNumber >= 0) {
+            lecturePaging = PageRequest.of(pageNumber, pageSize);
+        }
+
+        return lectureRepository.findAll(lecturePaging).stream()
                 .map(lecture -> modelMapper.map(lecture, LectureDto.class))
                 .collect(Collectors.toList());
     }
@@ -69,7 +75,7 @@ public class LectureServiceImpl implements LectureService {
         return sortedPercentageMap;
     }
 
-    private Double calculatePercentage(Lecture lecture){
+    private Double calculatePercentage(Lecture lecture) {
         return 100 * ((lecture.getMaxNumberOfSeats() - (double) lecture.getNumberOfFreeSeats()) / lecture.getMaxNumberOfSeats());
     }
 }

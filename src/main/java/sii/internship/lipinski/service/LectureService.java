@@ -6,7 +6,7 @@ import java.util.Map;
 
 
 public interface LectureService {
-    Iterable<LectureDto> getAll();
+    Iterable<LectureDto> getAll(Integer pageNumber, Integer pageSize);
 
     Iterable<LectureDto> getAllByUserLogin(String login);
 
