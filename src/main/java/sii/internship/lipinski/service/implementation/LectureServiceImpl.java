@@ -1,5 +1,6 @@
 package sii.internship.lipinski.service.implementation;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import sii.internship.lipinski.dao.dto.LectureDto;
@@ -15,19 +16,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@RequiredArgsConstructor
 @Service
 public class LectureServiceImpl implements LectureService {
 
     private final LectureRepository lectureRepository;
-    private final ModelMapper modelMapper;
+    private final ModelMapper modelMapper = new ModelMapper();
     private final LectureRegistrationService lectureRegistrationService;
 
-    public LectureServiceImpl(LectureRepository lectureRepository, LectureRegistrationService lectureRegistrationService) {
-        this.lectureRepository = lectureRepository;
-        this.lectureRegistrationService = lectureRegistrationService;
-        this.modelMapper = new ModelMapper();
-    }
-
+    //TODO: dodac paginacje
     @Override
     public Iterable<LectureDto> getAll() {
         return lectureRepository.findAll().stream()
@@ -48,8 +45,7 @@ public class LectureServiceImpl implements LectureService {
         Map<LectureDto, Double> sortedPercentageMap = new LinkedHashMap<>();
         lectureRepository.findAll()
                 .stream()
-                .collect(Collectors.toMap(lecture -> modelMapper.map(lecture, LectureDto.class),
-                        lecture -> 100 * ((lecture.getMaxNumberOfSeats() - (double) lecture.getNumberOfFreeSeats()) / lecture.getMaxNumberOfSeats())))
+                .collect(Collectors.toMap(lecture -> modelMapper.map(lecture, LectureDto.class), this::calculatePercentage))
                 .entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
@@ -73,5 +69,7 @@ public class LectureServiceImpl implements LectureService {
         return sortedPercentageMap;
     }
 
-
+    private Double calculatePercentage(Lecture lecture){
+        return 100 * ((lecture.getMaxNumberOfSeats() - (double) lecture.getNumberOfFreeSeats()) / lecture.getMaxNumberOfSeats());
+    }
 }

@@ -49,7 +49,7 @@ class LectureRegistrationServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        lectureRegistrationService = new LectureRegistrationServiceImpl(lectureRegistrationRepository, userService, lectureRepository, userRepository);
+        lectureRegistrationService = new LectureRegistrationServiceImpl(userService, lectureRepository, lectureRegistrationRepository, userRepository);
     }
 
     @Test
@@ -109,7 +109,6 @@ class LectureRegistrationServiceImplTest {
         }
         verify(lectureRegistrationRepository).save(expectedLectureRegistration);
         assertTrue(Files.isReadable(path));
-
     }
 
     @Test
@@ -141,7 +140,7 @@ class LectureRegistrationServiceImplTest {
     }
 
     @Test
-    @DisplayName("when given taken user credentials and correct lecture id but overlapping lecture hours it throws LoginTakenException")
+    @DisplayName("when given taken user credentials and correct lecture id it throws LoginTakenException")
     void whenGivenTakenUserCredentialsAndCorrectLectureId_thenItThrowsLoginTakenException() {
         //given
         UserDto testUserDto = new UserDto();

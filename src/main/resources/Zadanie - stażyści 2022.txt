@@ -44,3 +44,5 @@ Dołącz krótką instrukcję jak uruchomić projekt.
 +9.	Staraj się commit-ować wraz z przyrostem funkcjonalności, tak aby można było prześledzić rozwój aplikacji.
 
 Forma przesłania zadania: repozytorium GIT.
+
+

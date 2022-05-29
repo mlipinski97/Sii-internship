@@ -1,8 +1,7 @@
 package sii.internship.lipinski.service.implementation;
 
-import org.modelmapper.ModelMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sii.internship.lipinski.dao.dto.LectureDto;
 import sii.internship.lipinski.dao.dto.UserDto;
 import sii.internship.lipinski.dao.entity.Lecture;
 import sii.internship.lipinski.dao.entity.LectureRegistration;
@@ -22,29 +21,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
+@RequiredArgsConstructor
 public class LectureRegistrationServiceImpl implements LectureRegistrationService {
 
-    UserService userService;
-    LectureRepository lectureRepository;
-    LectureRegistrationRepository lectureRegistrationRepository;
-    UserRepository userRepository;
-    ModelMapper modelMapper;
-
-    public LectureRegistrationServiceImpl(LectureRegistrationRepository lectureRegistrationRepository,
-                                          UserService userService,
-                                          LectureRepository lectureRepository,
-                                          UserRepository userRepository) {
-        this.lectureRegistrationRepository = lectureRegistrationRepository;
-        this.modelMapper = new ModelMapper();
-        this.lectureRepository = lectureRepository;
-        this.userService = userService;
-        this.userRepository = userRepository;
-    }
+    private final UserService userService;
+    private final LectureRepository lectureRepository;
+    private final LectureRegistrationRepository lectureRegistrationRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Iterable<LectureRegistration> getAllLectureRegistrationsByUserLogin(String login) {
@@ -90,25 +76,10 @@ public class LectureRegistrationServiceImpl implements LectureRegistrationServic
         lectureRepository.save(lectureToUpdate);
     }
 
-    @Override
-    public Map<LectureDto, Double> getParticipationPercentagePerLectureByAllParticipants() {
-        List<LectureRegistration> lectureRegistrations = lectureRegistrationRepository.findAll();
-        Map<Lecture, Long> frequencyMap = lectureRegistrations.stream()
-                .collect(Collectors.groupingBy(LectureRegistration::getLecture, Collectors.counting()));
-        return frequencyMap.entrySet()
-                .stream()
-                .collect(Collectors.toMap(e -> modelMapper.map(e.getKey(), LectureDto.class), e -> (e.getValue().doubleValue() / lectureRegistrations.size()) * 100));
-    }
-
-
     private boolean isCollidingWithOtherRegisteredLecture(String userLogin, LocalDateTime lectureTime) {
         Iterable<LectureRegistration> registeredLectures = lectureRegistrationRepository.findAllByUserLogin(userLogin);
-        for (LectureRegistration lr : registeredLectures) {
-            if (lectureTime.isEqual(lr.getLecture().getStartingDateTime())) {
-                return true;
-            }
-        }
-        return false;
+        return StreamSupport.stream(registeredLectures.spliterator(), false)
+                .anyMatch(lr -> lectureTime.isEqual(lr.getLecture().getStartingDateTime()));
     }
 
     private void createEmailFile(String userEmail, Lecture lecture) {

@@ -18,7 +18,6 @@ import sii.internship.lipinski.service.LectureService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -28,8 +27,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class LectureServiceImplTest {
-
-    private static final Logger logger = Logger.getLogger(UserServiceImplTest.class.getName());
 
     @Mock
     LectureRepository lectureRepository;
